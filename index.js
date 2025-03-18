@@ -15,3 +15,8 @@ app.get('/ping', (req, res) => {
     res.send('tactoe');
   });
   
+
+    
+  app.get('/asdf', (req, res) => {
+    res.send('qwerty');
+  });
