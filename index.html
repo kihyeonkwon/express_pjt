@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게시판</title>
+    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Text&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f5f5f7;
+            color: #1d1d1f;
+            margin: 0;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2em;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 30px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 12px;
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+
+        button {
+            background-color: #0071e3;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #005bb5;
+        }
+
+        .article {
+            padding: 20px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .article:last-child {
+            border-bottom: none;
+        }
+
+        .article h2 {
+            margin: 0 0 10px;
+            font-size: 1.5em;
+            color: #0071e3;
+        }
+
+        .article p {
+            margin: 0 0 10px;
+            font-size: 1em;
+            line-height: 1.4;
+        }
+
+        .date {
+            color: #86868b;
+            font-size: 0.85em;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>게시판</h1>
+
+    <form id="articleForm">
+        <input type="text" id="title" placeholder="게시글 제목" required>
+        <textarea id="content" rows="4" placeholder="게시글 내용" required></textarea>
+        <button type="submit">게시글 작성</button>
+    </form>
+
+    <div id="articles"></div>
+</div>
+
+<script>
+    const API_URL = 'http://localhost:3000';
+
+    async function fetchArticles() {
+        const res = await fetch(`${API_URL}/articles`);
+        const articles = await res.json();
+        const articlesDiv = document.getElementById('articles');
+        articlesDiv.innerHTML = '';
+
+        articles.reverse().forEach(article => {
+            const articleDiv = document.createElement('div');
+            articleDiv.className = 'article';
+            articleDiv.innerHTML = `
+                <h2>${article.title}</h2>
+                <p>${article.content}</p>
+                <p class="date">작성일: ${new Date(article.date).toLocaleString()}</p>
+            `;
+            articlesDiv.appendChild(articleDiv);
+        });
+    }
+
+    document.getElementById('articleForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const title = document.getElementById('title').value;
+        const content = document.getElementById('content').value;
+
+        await fetch(`${API_URL}/articles`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ title, content, author_id: 1 })
+        });
+
+        document.getElementById('title').value = '';
+        document.getElementById('content').value = '';
+
+        fetchArticles();
+    });
+
+    window.onload = fetchArticles;
+</script>
+
+</body>
+</html>
