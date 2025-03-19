@@ -191,7 +191,20 @@ app.get('/articles', (req, res)=>{
 
 app.delete('/articles/:id', (req, res)=>{
 
+  let id = req.params.id
+
+  console.log(id);
+
+  articles.splice(id-1, 1);
+
+
+  res.send("ok")
+
 })
+
+
+
+
 
 app.post('/articles', (req, res)=>{
   
