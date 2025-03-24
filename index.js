@@ -62,3 +62,84 @@ app.get('/articles/:id', (req, res)=>{
     });
 
 })
+
+
+app.delete("/articles/:id", (req, res)=>{
+  const id = req.params.id
+
+
+  const sql = 'DELETE FROM articles WHERE id = ?';
+  db.run(sql, id, function(err) {
+    if (err) {
+      console.error(err.message);
+      return res.status(500).json({ error: err.message });
+    }
+    // this.changes는 영향을 받은 행의 수
+    res.json({ message: `총 ${this.changes}개의 아티클이 삭제되었습니다.` });
+  });
+
+})
+
+app.put('/articles/:id', (req, res)=>{
+  let id = req.params.id
+  // let title = req.body.title
+  // let content = req.body.content
+  let {title, content} = req.body
+ // SQL 업데이트 쿼리 (파라미터 바인딩 사용)
+ const sql = 'UPDATE articles SET title = ?, content = ? WHERE id = ?';
+ db.run(sql, [title, content, id], function(err) {
+   if (err) {
+     console.error('업데이트 에러:', err.message);
+     return res.status(500).json({ error: err.message });
+   }
+   // this.changes: 영향을 받은 행의 수
+   res.json({ message: '게시글이 업데이트되었습니다.', changes: this.changes });
+ });
+
+})
+
+
+
+
+
+app.get('/gettest/:id', (req, res)=>{
+
+  console.log(req.query)
+  console.log(req.params.id)
+
+
+  res.send("ok")
+})
+
+
+app.post('/posttest', (req, res)=>{
+  console.log(req.body)
+  res.send("ok")
+})
+
+
+// POST /articles/:id/comments 라우트
+app.post("/articles/:id/comments", (req, res) => {
+  const articleId = req.params.id;
+  const content = req.body.content;
+  
+  // 현재 날짜/시간을 ISO 문자열 형태로 생성
+  const createdAt = new Date().toISOString();
+
+  // comments 테이블에 INSERT 쿼리 실행
+  const sql = `INSERT INTO comments (content, created_at, article_id) VALUES (?, ?, ?)`;
+  db.run(sql, [content, createdAt, articleId], function(err) {
+    if (err) {
+      console.error("댓글 삽입 중 에러 발생:", err);
+      return res.status(500).json({ error: "댓글을 등록하는데 실패했습니다." });
+    }
+
+    // 삽입된 댓글의 id는 this.lastID에 저장됨.
+    res.status(201).json({
+      id: this.lastID,
+      content: content,
+      created_at: createdAt,
+      article_id: articleId
+    });
+  });
+});
