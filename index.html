@@ -1,152 +1,281 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>게시판</title>
-    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Text&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
-            background-color: #f5f5f7;
-            color: #1d1d1f;
-            margin: 0;
-            padding: 40px 20px;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: auto;
-            background: #ffffff;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-        }
-
-        h1 {
-            text-align: center;
-            font-size: 2em;
-            font-weight: 600;
-            margin-bottom: 20px;
-        }
-
-        form {
-            display: flex;
-            flex-direction: column;
-            margin-bottom: 30px;
-            padding-bottom: 30px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        input[type="text"], textarea {
-            width: 100%;
-            padding: 15px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 12px;
-            box-sizing: border-box;
-            font-size: 1em;
-        }
-
-        button {
-            background-color: #0071e3;
-            color: white;
-            border: none;
-            padding: 15px;
-            border-radius: 12px;
-            font-size: 1em;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        button:hover {
-            background-color: #005bb5;
-        }
-
-        .article {
-            padding: 20px 0;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .article:last-child {
-            border-bottom: none;
-        }
-
-        .article h2 {
-            margin: 0 0 10px;
-            font-size: 1.5em;
-            color: #0071e3;
-        }
-
-        .article p {
-            margin: 0 0 10px;
-            font-size: 1em;
-            line-height: 1.4;
-        }
-
-        .date {
-            color: #86868b;
-            font-size: 0.85em;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>세명컴퓨터고 AI 학습토론 게시판</title>
+  <style>
+    /* 기본 리셋 */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f5f5f5;
+      color: #333;
+    }
+    /* 헤더 (Reddit 스타일의 오렌지 톤) */
+    header {
+      background-color: #ff4500;
+      padding: 15px;
+      text-align: center;
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
+    }
+    /* 메인 컨테이너 */
+    .container {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 0 15px;
+    }
+    /* 폼 공통 스타일 */
+    form {
+      background-color: white;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 15px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    form input[type="text"],
+    form textarea {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      font-size: 14px;
+    }
+    form button {
+      padding: 8px 15px;
+      border: none;
+      border-radius: 3px;
+      background-color: #ff4500;
+      color: white;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    form button:hover {
+      background-color: #e03d00;
+    }
+    /* 게시글 카드 스타일 */
+    .post-card {
+      background-color: white;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      margin-bottom: 15px;
+      padding: 15px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .post-card h3 {
+      margin-bottom: 10px;
+      font-size: 20px;
+      color: #333;
+    }
+    .post-card p {
+      margin-bottom: 10px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+    .post-card button {
+      margin-right: 5px;
+      padding: 5px 10px;
+      border: none;
+      background-color: #ff4500;
+      color: white;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    .post-card button:hover {
+      background-color: #e03d00;
+    }
+    /* 섹션 제목 */
+    h2 {
+      margin-bottom: 10px;
+    }
+    /* 숨김 처리 클래스 */
+    .hidden {
+      display: none;
+    }
+  </style>
 </head>
 <body>
+  <header>
+    세명컴퓨터고 AI 학습토론 게시판
+  </header>
+  <div class="container">
+    <!-- 토론글 생성 폼 -->
+    <section id="createPostSection">
+      <h2>새 토론글 작성</h2>
+      <form id="createArticleForm">
+        <input type="text" id="title" placeholder="제목" required>
+        <textarea id="content" placeholder="내용" rows="5" required></textarea>
+        <button type="submit">작성</button>
+      </form>
+    </section>
+    
+    <!-- 토론글 목록 -->
+    <section id="postsSection">
+      <h2>토론글 목록</h2>
+      <div id="articlesList"></div>
+    </section>
+    
+    <!-- 토론글 수정 폼 -->
+    <section id="updatePostSection" class="hidden">
+      <h2>토론글 수정</h2>
+      <form id="updateArticleForm">
+        <input type="hidden" id="updateArticleId">
+        <input type="text" id="updateTitle" placeholder="제목" required>
+        <textarea id="updateContent" placeholder="내용" rows="5" required></textarea>
+        <button type="submit">수정</button>
+        <button type="button" id="cancelUpdate">취소</button>
+      </form>
+    </section>
+    
+    <!-- 댓글 작성 폼 -->
+    <section id="commentSection" class="hidden">
+      <h2>댓글 작성</h2>
+      <form id="commentForm">
+        <input type="hidden" id="commentArticleId">
+        <textarea id="commentContent" placeholder="댓글 내용" rows="3" required></textarea>
+        <button type="submit">댓글 등록</button>
+        <button type="button" id="cancelComment">취소</button>
+      </form>
+    </section>
+  </div>
+  
+  <script>
+    // API 기본 URL (백엔드가 http://localhost:3000 에서 실행중)
+    const API_BASE = 'http://localhost:3000';
 
-<div class="container">
-    <h1>게시판</h1>
-
-    <form id="articleForm">
-        <input type="text" id="title" placeholder="게시글 제목" required>
-        <textarea id="content" rows="4" placeholder="게시글 내용" required></textarea>
-        <button type="submit">게시글 작성</button>
-    </form>
-
-    <div id="articles"></div>
-</div>
-
-<script>
-    const API_URL = 'http://localhost:3000';
-
-    async function fetchArticles() {
-        const res = await fetch(`${API_URL}/articles`);
-        const articles = await res.json();
-        const articlesDiv = document.getElementById('articles');
-        articlesDiv.innerHTML = '';
-
-        articles.reverse().forEach(article => {
-            const articleDiv = document.createElement('div');
-            articleDiv.className = 'article';
-            articleDiv.innerHTML = `
-                <h2>${article.title}</h2>
-                <p>${article.content}</p>
-                <p class="date">작성일: ${new Date(article.date).toLocaleString()}</p>
+    // 토론글(게시글) 목록을 불러와서 표시
+    function loadArticles() {
+      fetch(`${API_BASE}/articles`)
+        .then(response => response.json())
+        .then(data => {
+          const articlesList = document.getElementById('articlesList');
+          articlesList.innerHTML = '';
+          data.forEach(article => {
+            const postCard = document.createElement('div');
+            postCard.className = 'post-card';
+            postCard.innerHTML = `
+              <h3>${article.title}</h3>
+              <p>${article.content}</p>
+              <button onclick="showUpdateForm(${article.id}, '${escapeQuotes(article.title)}', '${escapeQuotes(article.content)}')">수정</button>
+              <button onclick="deleteArticle(${article.id})">삭제</button>
+              <button onclick="showCommentForm(${article.id})">댓글</button>
             `;
-            articlesDiv.appendChild(articleDiv);
-        });
+            articlesList.appendChild(postCard);
+          });
+        })
+        .catch(err => console.error('토론글 불러오기 오류:', err));
     }
 
-    document.getElementById('articleForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
+    // 문자열 내 작은따옴표 이스케이프
+    function escapeQuotes(text) {
+      return text.replace(/'/g, "\\'");
+    }
 
-        const title = document.getElementById('title').value;
-        const content = document.getElementById('content').value;
-
-        await fetch(`${API_URL}/articles`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ title, content, author_id: 1 })
-        });
-
-        document.getElementById('title').value = '';
-        document.getElementById('content').value = '';
-
-        fetchArticles();
+    // 새 토론글 작성 폼 제출 핸들러
+    document.getElementById('createArticleForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const title = document.getElementById('title').value;
+      const content = document.getElementById('content').value;
+      fetch(`${API_BASE}/articles`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, content })
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log('토론글 작성:', data);
+        loadArticles();
+        document.getElementById('createArticleForm').reset();
+      })
+      .catch(err => console.error('토론글 작성 오류:', err));
     });
 
-    window.onload = fetchArticles;
-</script>
+    // 기존 토론글 데이터를 수정 폼에 채워 표시
+    function showUpdateForm(id, title, content) {
+      document.getElementById('updatePostSection').classList.remove('hidden');
+      document.getElementById('updateArticleId').value = id;
+      document.getElementById('updateTitle').value = title;
+      document.getElementById('updateContent').value = content;
+      document.getElementById('updatePostSection').scrollIntoView({ behavior: 'smooth' });
+    }
 
+    // 수정 폼 취소 버튼
+    document.getElementById('cancelUpdate').addEventListener('click', function() {
+      document.getElementById('updatePostSection').classList.add('hidden');
+      document.getElementById('updateArticleForm').reset();
+    });
+
+    // 토론글 수정 폼 제출 핸들러
+    document.getElementById('updateArticleForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const id = document.getElementById('updateArticleId').value;
+      const title = document.getElementById('updateTitle').value;
+      const content = document.getElementById('updateContent').value;
+      fetch(`${API_BASE}/articles/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, content })
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log('토론글 수정:', data);
+        loadArticles();
+        document.getElementById('updatePostSection').classList.add('hidden');
+        document.getElementById('updateArticleForm').reset();
+      })
+      .catch(err => console.error('토론글 수정 오류:', err));
+    });
+
+    // 토론글 삭제 함수
+    function deleteArticle(id) {
+      if (!confirm('정말 삭제하시겠습니까?')) return;
+      fetch(`${API_BASE}/articles/${id}`, { method: 'DELETE' })
+        .then(response => response.json())
+        .then(data => {
+          console.log('토론글 삭제:', data);
+          loadArticles();
+        })
+        .catch(err => console.error('토론글 삭제 오류:', err));
+    }
+
+    // 댓글 작성 폼 표시 함수
+    function showCommentForm(articleId) {
+      document.getElementById('commentSection').classList.remove('hidden');
+      document.getElementById('commentArticleId').value = articleId;
+      document.getElementById('commentSection').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // 댓글 작성 폼 취소 버튼
+    document.getElementById('cancelComment').addEventListener('click', function() {
+      document.getElementById('commentSection').classList.add('hidden');
+      document.getElementById('commentForm').reset();
+    });
+
+    // 댓글 작성 폼 제출 핸들러
+    document.getElementById('commentForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const articleId = document.getElementById('commentArticleId').value;
+      const content = document.getElementById('commentContent').value;
+      fetch(`${API_BASE}/articles/${articleId}/comments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content })
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log('댓글 작성:', data);
+        alert('댓글이 추가되었습니다.');
+        document.getElementById('commentSection').classList.add('hidden');
+        document.getElementById('commentForm').reset();
+      })
+      .catch(err => console.error('댓글 작성 오류:', err));
+    });
+
+    window.onload = loadArticles;
+  </script>
 </body>
 </html>

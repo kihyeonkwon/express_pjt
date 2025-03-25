@@ -49,5 +49,26 @@ function initCommentsTable() {
 initCommentsTable();
 
 
+// users 테이블 생성 함수
+function initUsersTable() {
+  db.run(`
+    CREATE TABLE IF NOT EXISTS users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      email TEXT NOT NULL UNIQUE,
+      password TEXT NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `, (err) => {
+    if (err) {
+      console.error("users 테이블 생성 에러:", err);
+    } else {
+      console.log("테이블 준비 완료(users)");
+    }
+  });
+}
+
+initUsersTable();
+
+
 
 
